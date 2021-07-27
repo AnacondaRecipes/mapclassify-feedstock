@@ -15,10 +15,12 @@ build:
 
 requirements:
   host:
-    - python >=3.5
+    - python >=3.6
     - pip
+    - setuptools
+    - wheel
   run:
-    - python >=3.5
+    - python >=3.6
     - networkx
     - numpy >=1.3
     - pandas >=1.0
@@ -35,12 +37,13 @@ test:
     - pip
 
 about:
-  home: https://github.com/pysal/mapclassify
+  home: https://pysal.org/mapclassify/
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt
   summary: Classification schemes for choropleth maps
   dev_url: https://github.com/pysal/mapclassify
+  doc_url: https://pysal.org/mapclassify/tutorial.html
 
 extra:
   recipe-maintainers:

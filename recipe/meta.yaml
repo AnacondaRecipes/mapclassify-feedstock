@@ -2,11 +2,11 @@
 {% set version = "2.5.0" %}
 
 package:
-  name: mapclassify
+  name: {{ name|lower }}}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/m/mapclassify/mapclassify-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/m/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 5eb1f782155b5a90ec93c1dc52b300a2fad33117dcf08b7c858ed96da2a7baa0
 
 build:

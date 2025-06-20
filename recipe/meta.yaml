@@ -14,7 +14,7 @@ build:
   # Seems like the package is compatible with py>=38,
   # see https://github.com/pysal/mapclassify/tree/main/ci
   skip: true  # [py<311]
-  script: {{ PYTHON }} -m pip install . -vv --no-deps
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
 
 requirements:
   host:
@@ -22,6 +22,7 @@ requirements:
     - pip
     - setuptools >=61.0
     - setuptools-scm >=6.2
+    - wheel
   run:
     - python
     - networkx >=3.2

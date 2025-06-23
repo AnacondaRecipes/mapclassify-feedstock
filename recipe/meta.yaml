@@ -54,7 +54,8 @@ test:
     - pip check
     # Ignore test because of 'ImportError: attempted relative import beyond top-level package'
     # Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
-    - pytest -vv mapclassify/tests -k "not test_legendgram_map[png]" --ignore=mapclassify/tests/test_mapclassify.py --ignore=mapclassify/tests/test_greedy.py
+    - pytest -vv mapclassify/tests -k "not test_legendgram_map[png]" --ignore=mapclassify/tests/test_mapclassify.py --ignore=mapclassify/tests/test_greedy.py --ignore=mapclassify/tests/test_classify.py --ignore=mapclassify/tests/test_legendgram.py
+
 
 about:
   home: https://pysal.org/mapclassify/

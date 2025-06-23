@@ -11,9 +11,6 @@ source:
 
 build:
   number: 0
-  # Seems like the package is compatible with py>=38,
-  # see https://github.com/pysal/mapclassify/tree/main/ci
-  skip: true  # [py<311]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
 
 requirements:
@@ -22,6 +19,7 @@ requirements:
     - pip
     - setuptools >=61.0
     - setuptools-scm >=6.2
+    - toml
     - wheel
   run:
     - python
@@ -30,6 +28,7 @@ requirements:
     - pandas >=2.1
     - scikit-learn >=1.4
     - scipy >=1.12
+    - pyogrio
   run_constrained:
     - numba >=0.58
 
@@ -37,10 +36,21 @@ test:
   imports:
     - mapclassify
     - mapclassify.datasets
-  commands:
-    - pip check
+  source_files:
+    - mapclassify/tests
   requires:
     - pip
+    - pytest
+    - pytest-xdist
+    - geopandas
+    - libpysal
+    - matplotlib-base
+    - shapely
+  commands:
+    - pip check
+    # Ignore test because of 'ImportError: attempted relative import beyond top-level package'
+    # Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
+    - pytest -vv mapclassify/tests -k "not test_legendgram_map[png]" --ignore=mapclassify/tests/test_mapclassify.py --ignore=mapclassify/tests/test_greedy.py
 
 about:
   home: https://pysal.org/mapclassify/

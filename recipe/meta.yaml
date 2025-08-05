@@ -55,7 +55,7 @@ test:
 
 
 about:
-  home: https://pysal.org/mapclassify/
+  home: https://pysal.org/mapclassify
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt

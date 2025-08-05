@@ -64,7 +64,7 @@ test:
     - shapely
   commands:
     - pip check
-    
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     - pytest -vv {{ skip_tests }} mapclassify/tests -k "not test_legendgram_map[png]"
 
 

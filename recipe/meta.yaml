@@ -11,9 +11,6 @@ source:
 
 build:
   number: 0
-  # Seems like the package is compatible with py>=38,
-  # see https://github.com/pysal/mapclassify/tree/main/ci
-  # but it fails if Python '>=3.11'"
   skip: true  # [py<311]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
 

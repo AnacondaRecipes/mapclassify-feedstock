@@ -33,6 +33,19 @@ requirements:
   run_constrained:
     - numba >=0.58
 
+{% set skip_tests = "" %}
+
+# Ignore test because of 'ImportError: attempted relative import beyond top-level package'
+{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_mapclassify.py" %}
+{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_greedy.py" %}
+{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_classify.py" %}
+{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_legendgram.py" %}
+
+# Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
+
+# Testing
+{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_value_by_alpha.py" %}
+
 test:
   imports:
     - mapclassify
@@ -43,15 +56,16 @@ test:
     - pip
     - pytest
     - pytest-xdist
-    - geopandas
+    # earlier than 0.10.0 use ops.cascaded_union from shapely which was removed in 2.0.0
+    - geopandas >=0.10.0
     - libpysal
     - matplotlib-base
+    #  deprecated and was removed from version 2.0.0
     - shapely
   commands:
     - pip check
-    # Ignore test because of 'ImportError: attempted relative import beyond top-level package'
-    # Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
-    - pytest -vv mapclassify/tests -k "not test_legendgram_map[png]" --ignore=mapclassify/tests/test_mapclassify.py --ignore=mapclassify/tests/test_greedy.py --ignore=mapclassify/tests/test_classify.py --ignore=mapclassify/tests/test_legendgram.py
+    
+    - pytest -vv {{ skip_tests }} mapclassify/tests -k "not test_legendgram_map[png]"
 
 
 about:

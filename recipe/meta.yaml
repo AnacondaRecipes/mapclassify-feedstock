@@ -39,18 +39,17 @@ requirements:
 
 {% set skip_tests = "" %}
 
-# Ignore test because of 'ImportError: attempted relative import beyond top-level package'
-{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_mapclassify.py" %}
-{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_greedy.py" %}
-{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_classify.py" %}
-{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_legendgram.py" %}
+# Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
+{% set skip_tests = skip_tests + " --deselect=mapclassify/tests/test_legendgram.py::TestLegendgram::test_legendgram_map[png]" %}
+{% set skip_tests = skip_tests + " --deselect=mapclassify/tests/test_legendgram.py::TestLegendgram::test_legendgram_most_recent_cmap[png]" %}
 
 test:
   imports:
     - mapclassify
     - mapclassify.datasets
   source_files:
-    - mapclassify/tests
+# Use top level dir to avoid 'ImportError: attempted relative import beyond top-level package'
+    - mapclassify
   requires:
     - pip
     - pytest

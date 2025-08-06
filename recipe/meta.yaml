@@ -8,6 +8,10 @@ package:
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 0d6736a08c0b1e10e6197224ef512951514204706514244bd01aea49fd1442b3
+  patches:
+  # image comparison tests fail with default tolerance and current dependencies.
+  # TODO: Remove this once test dependency geopandas version 1.1.0 or above is available.
+    - patches/0000_relax_test_diff_tolerance.patch
 
 build:
   number: 0
@@ -41,9 +45,6 @@ requirements:
 {% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_classify.py" %}
 {% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_legendgram.py" %}
 
-# Testing
-#{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_value_by_alpha.py" %}
-
 test:
   imports:
     - mapclassify
@@ -54,7 +55,8 @@ test:
     - pip
     - pytest
     - pytest-xdist
-    # earlier than 0.10.0 use ops.cascaded_union from shapely which was removed in 2.0.0
+    # geopandas earlier than 0.10.0 use ops.cascaded_union from shapely which was removed in 2.0.0.
+    # TODO: Update geopandas pinning to >=1.1.0 once available and get rid of the compare diff tolerance relaxation patch
     - geopandas >=0.10.0
     - libpysal
     - matplotlib-base

@@ -41,10 +41,8 @@ requirements:
 {% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_classify.py" %}
 {% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_legendgram.py" %}
 
-# Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
-
 # Testing
-{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_value_by_alpha.py" %}
+#{% set skip_tests = skip_tests + " --ignore=mapclassify/tests/test_value_by_alpha.py" %}
 
 test:
   imports:
@@ -60,11 +58,11 @@ test:
     - geopandas >=0.10.0
     - libpysal
     - matplotlib-base
-    #  deprecated and was removed from version 2.0.0
     - shapely
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    # Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
     - pytest -vv {{ skip_tests }} mapclassify/tests -k "not test_legendgram_map[png]"
 
 

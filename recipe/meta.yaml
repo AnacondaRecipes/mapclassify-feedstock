@@ -1,19 +1,20 @@
 {% set name = "mapclassify" %}
-{% set version = "2.9.0" %}
+{% set version = "2.10.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/m/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 65fa7a7d778ed63496ff860b9f3c26d632d8f289820a6d8556ac527d14b26bd8
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 0d6736a08c0b1e10e6197224ef512951514204706514244bd01aea49fd1442b3
+  patches:
+  # image comparison tests fail with default tolerance and current dependencies.
+  # TODO: Remove this once test dependency geopandas version 1.1.0 or above is available.
+    - patches/0000_relax_test_diff_tolerance.patch
 
 build:
   number: 0
-  # Seems like the package is compatible with py>=38,
-  # see https://github.com/pysal/mapclassify/tree/main/ci
-  # but it fails if Python '>=3.11'"
   skip: true  # [py<311]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
 
@@ -36,29 +37,37 @@ requirements:
   run_constrained:
     - numba >=0.58
 
+{% set skip_tests = "" %}
+
+# Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
+{% set skip_tests = skip_tests + " --deselect=mapclassify/tests/test_legendgram.py::TestLegendgram::test_legendgram_map[png]" %}
+{% set skip_tests = skip_tests + " --deselect=mapclassify/tests/test_legendgram.py::TestLegendgram::test_legendgram_most_recent_cmap[png]" %}
+
 test:
   imports:
     - mapclassify
     - mapclassify.datasets
   source_files:
-    - mapclassify/tests
+# Use top level dir to avoid 'ImportError: attempted relative import beyond top-level package'
+    - mapclassify
   requires:
     - pip
     - pytest
     - pytest-xdist
-    - geopandas
+    # geopandas earlier than 0.10.0 use ops.cascaded_union from shapely which was removed in 2.0.0.
+    # TODO: Update geopandas pinning to >=1.1.0 once available and get rid of the compare diff tolerance relaxation patch
+    - geopandas >=0.10.0
     - libpysal
     - matplotlib-base
     - shapely
   commands:
     - pip check
-    # Ignore test because of 'ImportError: attempted relative import beyond top-level package'
-    # Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
-    - pytest -vv mapclassify/tests -k "not test_legendgram_map[png]" --ignore=mapclassify/tests/test_mapclassify.py --ignore=mapclassify/tests/test_greedy.py --ignore=mapclassify/tests/test_classify.py --ignore=mapclassify/tests/test_legendgram.py
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -vv {{ skip_tests }} mapclassify/tests
 
 
 about:
-  home: https://pysal.org/mapclassify/
+  home: https://pysal.org/mapclassify
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt

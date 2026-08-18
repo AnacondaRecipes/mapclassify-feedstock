@@ -1,21 +1,41 @@
 {% set name = "mapclassify" %}
-{% set version = "2.10.0" %}
+{% set version = "2.11.0" %}
+{% set skip_tests = "" %}
+{% set skip_tests = 'skip_tests + " --deselect=mapclassify/tests/test_legendgram.py::TestLegendgram::test_legendgram_map[png]"' %}
+{% set skip_tests = 'skip_tests + " --deselect=mapclassify/tests/test_legendgram.py::TestLegendgram::test_legendgram_most_recent_cmap[png]"' %}
+{% set ignore_tests_files = " --ignore=mapclassify/tests/test_classify.py" %}
+{% set ignore_tests_files = ignore_tests_files + " --ignore=mapclassify/tests/test_greedy.py" %}
+{% set ignore_tests_files = ignore_tests_files + " --ignore=mapclassify/tests/test_legendgram.py" %}
+{% set ignore_tests_files = ignore_tests_files + " --ignore=mapclassify/tests/test_rgba.py" %}
+{% set ignore_tests_files = ignore_tests_files + " --ignore=mapclassify/tests/test_value_by_alpha.py" %}
 
+# Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
+# PY314 Rebuild disable geopandas tests for rebuild only (TODO: remove this once geopandas py314 available)
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 0d6736a08c0b1e10e6197224ef512951514204706514244bd01aea49fd1442b3
+  sha256: 85dbfe747e5b5aed1f1fd41ef5de0c0ab8322227ee308191a44fff12c59c197d
   patches:
   # image comparison tests fail with default tolerance and current dependencies.
   # TODO: Remove this once test dependency geopandas version 1.1.0 or above is available.
     - patches/0000_relax_test_diff_tolerance.patch
 
+
+
+
+
+
+
+
+
+
+
 build:
-  number: 1
-  skip: true  # [py<311]
+  number: 0
+  skip: true  # [py<312]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
 
 requirements:
@@ -25,37 +45,23 @@ requirements:
     - setuptools >=61.0
     - setuptools-scm >=6.2
     - toml
-    - wheel
   run:
     - python
-    - networkx >=3.2
-    - numpy >=1.26
-    - pandas >=2.1
-    - scikit-learn >=1.4
-    - scipy >=1.12
+    - networkx >=3.4
+    - numpy >=2.0
+    - pandas >=2.3
+    - scikit-learn >=1.5
+    - scipy >=1.14
     - pyogrio
   run_constrained:
-    - numba >=0.58
-
-{% set skip_tests = "" %}
-
-# Skip test_legendgram_map[png] because of 'pyogrio.errors.DataSourceError: None: No such file or directory'
-{% set skip_tests = skip_tests + " --deselect=mapclassify/tests/test_legendgram.py::TestLegendgram::test_legendgram_map[png]" %}
-{% set skip_tests = skip_tests + " --deselect=mapclassify/tests/test_legendgram.py::TestLegendgram::test_legendgram_most_recent_cmap[png]" %}
-
-# PY314 Rebuild disable geopandas tests for rebuild only (TODO: remove this once geopandas py314 available)
-{% set ignore_tests_files = " --ignore=mapclassify/tests/test_classify.py" %}
-{% set ignore_tests_files = ignore_tests_files + " --ignore=mapclassify/tests/test_greedy.py" %}
-{% set ignore_tests_files = ignore_tests_files + " --ignore=mapclassify/tests/test_legendgram.py" %}
-{% set ignore_tests_files = ignore_tests_files + " --ignore=mapclassify/tests/test_rgba.py" %}
-{% set ignore_tests_files = ignore_tests_files + " --ignore=mapclassify/tests/test_value_by_alpha.py" %}
+    - numba >=0.60
 
 test:
   imports:
     - mapclassify
     - mapclassify.datasets
   source_files:
-# Use top level dir to avoid 'ImportError: attempted relative import beyond top-level package'
+    # Use top level dir to avoid 'ImportError: attempted relative import beyond top-level package'
     - mapclassify
   requires:
     - pip
@@ -71,7 +77,6 @@ test:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     - pytest -ra -vv {{ skip_tests }} {{ ignore_tests_files }} mapclassify/tests
-
 
 about:
   home: https://pysal.org/mapclassify
